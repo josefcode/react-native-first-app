@@ -18,6 +18,7 @@ export const Container = styled(TouchableOpacity)<ButtonProps>`
    border-radius: 6px;
    justify-content: center;
    align-items: center;
+   margin-top: 14px;
 `
 
 export const Title = styled.Text`

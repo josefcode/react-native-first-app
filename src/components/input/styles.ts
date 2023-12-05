@@ -12,6 +12,6 @@ flex: 1;
 min-height: 56px;
 max-height: 56px;
 border-radius: 6px;
-padding: 16px;
-margin-bottom: 20px;
+padding-left: 16px;
+align-items: center
 `
