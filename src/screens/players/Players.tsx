@@ -5,30 +5,27 @@ import { Highlight } from '../../components/heigh-light/HeighLight'
 import { Input } from '../../components/input/Input'
 import { Container, Form, HeaderList, NumbersOfPlayers} from './styles'
 import { Alert, FlatList, TextInput} from 'react-native'
-import {useState, useEffect, useRef } from 'react'
+import {useEffect, useRef } from 'react'
 import { PlayerCard } from '../../components/player-cord/PlayerCard'
 import { ListEmpty } from '../../components/list-input/ListEmpty'
 import { Button } from '../../components/button/Button'
 import { useRoute, useNavigation } from '@react-navigation/native'
 import { AppError } from '../../utils/AppError'
 import { playerAddByGroup } from '../../storage/player/playerAddByGroup'
-import { playersGetByGroup } from '../../storage/player/playersGetByGroup'
 import { playersGetByGroupAndTeam } from '../../storage/player/playersGetByGroupAndTeam'
-import { PlayerStorageDTO } from '../../storage/player/PlayerStorageDTO'
 import { playerRemoveByGroup } from '../../storage/player/playerRemoveByGroup'
 import { groupRemoveByName } from '../../storage/group/groupRemoveByName'
-import { isLoading } from 'expo-font'
 import { LoadingIndicator } from '../../components/loading/styles'
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { setIsLoading, setPlayers, setNewPlayerName, setTeam } from '../../redux/reducers';
 
 type RouteParams = {
    group: string
 } 
 
 export function Players() {
-   const [team, setTeam] = useState('team a')
-   const [isLoading, setIsLoading] = useState(false)
-   const [players, setPlayers] = useState<PlayerStorageDTO[]>([])
-   const [newPlayerName, SetNewPlayerName] = useState('')
+   const { isLoading, players, newPlayerName, team } = useAppSelector((state ) => state.profileStatus)
+   const dispatch = useAppDispatch()
    const newPlayerNameInputRef = useRef<TextInput>(null)
    const route = useRoute()
    const navigation = useNavigation()
@@ -49,7 +46,7 @@ export function Players() {
 
       await playerAddByGroup(newPlayer, group)
       newPlayerNameInputRef.current?.blur()
-      SetNewPlayerName('')
+      dispatch(setNewPlayerName(''))
       fetchPlayersByTeam()
 
     } catch (error) {
@@ -64,11 +61,11 @@ export function Players() {
 
    const fetchPlayersByTeam = async ()  => {
       try {
-        setIsLoading(true)
+        dispatch(setIsLoading())
         const playersByTeam = await playersGetByGroupAndTeam(group, team)
 
-        setPlayers(playersByTeam);
-        setIsLoading(false)
+        dispatch(setPlayers(playersByTeam));
+        dispatch(setIsLoading())
       } catch (error) {
         console.log(error);
         Alert.alert('pessoas', 'Nao foi possivel carregar as pessoas filtradas')
@@ -119,7 +116,7 @@ export function Players() {
          <Form>
           <Input 
           inputRef = {newPlayerNameInputRef}
-          onChangeText = {SetNewPlayerName}
+          onChangeText = {newText => dispatch(setNewPlayerName(newText))}
           value = {newPlayerName}
           placeholder='Nome da pessoa'
           autoCorrect= {false}
@@ -137,7 +134,7 @@ export function Players() {
             <Filter 
             title = {item}
             isActive = {item === team}
-            onPress = {() => setTeam(item)}
+            onPress = {() => dispatch(setTeam(item))}
            />
            )}
            horizontal

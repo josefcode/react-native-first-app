@@ -4,22 +4,21 @@ import { Header } from "../../components/header/Header"
 import { Highlight } from "../../components/heigh-light/HeighLight"
 import { Input } from "../../components/input/Input"
 import { Container, Content, Icon } from "./styles"
-import { useState } from "react"
 import { groupCreate } from "../../storage/group/groupCreate"
 import { AppError } from "../../utils/AppError"
 import { Alert } from "react-native"
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { setNewGroup } from '../../redux/reducers';
 
 export function NewGroup(){
     const navigation = useNavigation()
-    const [newGroup, setNewGroup] = useState('')
-
+    const { newGroup } = useAppSelector((state ) => state.profileStatus)
+    const dispatch = useAppDispatch()
     async function handleNavigateNewGroup(){
-     
         try{
             if(newGroup.trim().length === 0) {
                 return  Alert.alert('Novo Grupo', 'Enform o nome da turma')
             }
-
             await groupCreate(newGroup);
             navigation.navigate('players', {group: newGroup})
            }catch(error){
@@ -34,7 +33,6 @@ export function NewGroup(){
     return (
         <Container>
             <Header showBackButton = {true} />
-
             <Content>
                <Icon />
                <Highlight
@@ -43,7 +41,7 @@ export function NewGroup(){
                />
                <Input 
                placeholder="Nome da turma"
-               onChangeText={setNewGroup}
+               onChangeText={textEvent => dispatch(setNewGroup(textEvent))}
                />
                <Button title = "Criar"
                 onPress = {handleNavigateNewGroup}

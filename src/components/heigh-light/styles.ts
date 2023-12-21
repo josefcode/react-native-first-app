@@ -3,7 +3,6 @@ import { ThemeType } from "../../theme/theme";
 
 export const Container = styled.View`
 width: 100%;
-height: 32px 0;
 margin-bottom: 20px;
 `;
 
